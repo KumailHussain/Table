@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Calculation Results</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: Arial, sans-serif;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+      }
+      .content {
+        flex: 1;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+      }
+      th,
+      td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: center;
+      }
+      th {
+        background-color: #f4f4f4;
+      }
+      .form-container {
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+        background-color: #f4f4f4;
+        padding: 10px;
+        box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+      }
+      .form-container input,
+      .form-container select {
+        margin-right: 10px;
+        padding: 5px;
+      }
+      .move-radio {
+        margin-right: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="content">
+      <h1>Calculation Results</h1>
+      <table>
+        <thead>
+          <tr>
+            <th>Input Value</th>
+            <th>Move</th>
+            <th>Gain</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody id="results">
+          <!-- Results will be inserted here by JavaScript -->
+        </tbody>
+      </table>
+    </div>
+
+    <div class="form-container">
+      <form id="calcForm">
+        <input
+          type="number"
+          id="total"
+          placeholder="Total"
+          value="85"
+          required
+        />
+        <input type="number" id="value" placeholder="Value" required />
+        <select id="operation" required>
+          <option value="1.9" selected>1.9</option>
+          <option value="2">2</option>
+        </select>
+        <label class="move-radio">
+          <input type="radio" name="move" value="W" checked /> Win (W)
+        </label>
+        <label class="move-radio">
+          <input type="radio" name="move" value="L" /> Lose (L)
+        </label>
+        <button type="submit">Calculate</button>
+      </form>
+    </div>
+
+    <script>
+      var count = 0;
+      var total = parseFloat(document.getElementById("total").value);
+
+      function calculateResult(value, multiplier, move) {
+        if (count === 0) {
+          total = parseFloat(document.getElementById("total").value);
+          document.getElementById("total").style.display = "none";
+        } else {
+          total = parseFloat(total);
+        }
+        count = 1;
+        let gain = 0;
+        total = parseFloat(total);
+        value = parseFloat(value);
+        multiplier = parseFloat(multiplier);
+
+        if (move === "L") {
+          total -= value;
+          gain = -value;
+        } else if (move === "W") {
+          const preTotal = total;
+          const multiplierX = value * multiplier;
+          total = (total + multiplierX).toFixed(2);
+          gain = (total - preTotal).toFixed(2);
+        }
+
+        // Create a new row and insert the results into the table
+        const tableBody = document.getElementById("results");
+        const newRow = document.createElement("tr");
+
+        newRow.innerHTML = `
+                <td>${value}</td>
+                <td style="color: ${
+                  move === "L" ? "black" : "black"
+                };background: ${move === "L" ? "red" : "green"};">${move}</td>
+                <td>${gain}</td>
+                <td>${total}</td>
+            `;
+
+        tableBody.appendChild(newRow);
+      }
+
+      document
+        .getElementById("calcForm")
+        .addEventListener("submit", function (event) {
+          event.preventDefault();
+          const value = parseFloat(document.getElementById("value").value);
+          const operation = document.getElementById("operation").value;
+          const move = document.querySelector(
+            'input[name="move"]:checked'
+          ).value;
+          calculateResult(value, operation, move);
+        });
+    </script>
+  </body>
+</html>
